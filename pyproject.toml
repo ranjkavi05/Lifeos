@@ -7,14 +7,15 @@ name = "lifeos"
 version = "0.1.0"
 description = "AI Digital Life Simulator"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
     "pydantic>=2.0.0",
     "openai>=1.0.0",
-    "pyyaml>=6.0"
+    "pyyaml>=6.0",
+    "openenv-core>=0.2.0"
 ]
 
 [project.scripts]
-server = "app:run"
+server = "server.app:main"
