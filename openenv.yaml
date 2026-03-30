@@ -1,0 +1,30 @@
+name: lifeos
+description: AI Digital Life Simulator
+
+entry_point: lifeos.env:LifeOSEnv
+
+actions:
+- work_overtime
+- exercise
+- invest_money
+- learn_skill
+- socialize
+- rest
+- start_side_hustle
+- take_vacation
+- meditate
+- gamble
+
+observation_space:
+  health: [0, 100]
+  money: [0, 100000]
+  stress: [0, 100]
+  career: [0, 100]
+  relationships: [0, 100]
+
+tasks:
+- easy
+- medium
+- hard
+
+grader: lifeos.utils:grade_agent

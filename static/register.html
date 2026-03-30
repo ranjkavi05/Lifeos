@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeOS — Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ─── CSS Variables (Theme System) ──────────────────────────────────────── */
+:root {
+  --font: 'Inter', -apple-system, sans-serif;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --bg-card: rgba(17, 24, 39, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+}
+
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 50%);
+  animation: bgShift 20s ease-in-out infinite alternate; z-index: -1;
+}
+
+@keyframes bgShift { 0% { transform: translate(0, 0); } 100% { transform: translate(2%, 1%); } }
+
+.auth-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.logo {
+  font-weight: 800; font-size: 2.2rem; margin-bottom: 0.5rem;
+  background: var(--accent-gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 2rem; }
+
+.input-group { text-align: left; margin-bottom: 1.2rem; }
+.input-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; }
+.auth-input {
+  width: 100%; padding: 0.8rem 1rem;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-family: var(--font); font-size: 0.95rem; outline: none; transition: var(--transition);
+}
+.auth-input:focus { border-color: #6366f1; }
+.auth-input option { background: var(--bg-primary); color: var(--text-primary); }
+
+.btn-primary {
+  width: 100%; padding: 0.85rem; border: none; border-radius: var(--radius-sm);
+  background: var(--accent-gradient); color: #fff; margin-top: 1rem;
+  font-family: var(--font); font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+
+.link-text { display: block; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-secondary); text-decoration: none; }
+.link-text span { color: #8b5cf6; font-weight: 600; }
+.link-text:hover span { text-decoration: underline; }
+
+/* Grid for detailed options */
+.detailed-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
+</style>
+</head>
+<body>
+
+<div class="auth-card">
+  <div class="logo">LifeOS</div>
+  <div class="subtitle">Create Your Digital Twin</div>
+
+  <form id="registerForm">
+    <div class="input-group">
+      <label class="input-label">Full Name</label>
+      <input type="text" id="username" class="auth-input" placeholder="e.g. Alex" required>
+    </div>
+    
+    <div class="detailed-options">
+      <div class="input-group" style="margin-bottom:0;">
+        <label class="input-label">Select Avatar</label>
+        <select id="avatar" class="auth-input">
+          <option value="🧙‍♂️">🧙‍♂️ Wizard</option>
+          <option value="🧑‍🚀">🧑‍🚀 Explorer</option>
+          <option value="🥷">🥷 Ninja</option>
+          <option value="🧛">🧛 Vampire</option>
+        </select>
+      </div>
+      <div class="input-group" style="margin-bottom:0;">
+        <label class="input-label">Starting Background</label>
+        <select id="background" class="auth-input">
+          <option value="standard">Standard</option>
+          <option value="rich_parents">Rich Parents</option>
+          <option value="college_debt">College Debt</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Password</label>
+      <input type="password" id="password" class="auth-input" placeholder="••••••••" required>
+    </div>
+
+    <button type="submit" class="btn-primary">Register & Initialize Life</button>
+  </form>
+  
+  <a href="/login" class="link-text">Already have a life? <span>Log in</span></a>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const avatar = document.getElementById('avatar').value;
+  const background = document.getElementById('background').value;
+  
+  // Save specific detailed options to localStorage for daily life personalization
+  localStorage.setItem('lifeos-user', username);
+  localStorage.setItem('lifeos-avatar', avatar);
+  localStorage.setItem('lifeos-background', background);
+  
+  window.location.href = '/';
+});
+</script>
+
+</body>
+</html>
