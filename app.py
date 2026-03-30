@@ -149,6 +149,12 @@ async def register_page():
     return HTMLResponse(content="<h1>LifeOS</h1><p>Register missing</p>")
 
 
-if __name__ == "__main__":
+
+def run():
+    """Run method for the [project.scripts] 'server' entry point."""
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    uvicorn.run("app:app", host="0.0.0.0", port=7860, reload=False)
+
+
+if __name__ == "__main__":
+    run()
