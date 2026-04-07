@@ -1,4 +1,4 @@
-﻿"""
+"""
 LifeOS FastAPI Server — OpenEnv-compatible HTTP API.
 Moved to server/app.py for validation compliance.
 """
@@ -6,6 +6,7 @@ import os
 from typing import Optional, Dict, Any
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 try:
@@ -21,6 +22,11 @@ app = FastAPI(
     description="AI Digital Life Simulator — OpenEnv Environment",
     version="1.0.0",
 )
+
+# Mount static files (CSS, JS)
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if os.path.isdir(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Global environment instance
 env = LifeOSEnv(personality="ambitious", task="medium", seed=42)

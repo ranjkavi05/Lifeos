@@ -3,669 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="LifeOS — Premium AI Digital Life Simulator">
-<title>LifeOS — Premium Digital Twin Simulator</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="LifeOS — Premium AI Digital Life Simulator. Navigate life decisions with an intelligent AI agent.">
+<title>LifeOS — AI Digital Life Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-/* ─── CSS Variables (Premium Cyberpunk Theme) ──────────────────────────── */
-:root {
-  --font-heading: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --radius: 20px;
-  --radius-sm: 12px;
-  --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-[data-theme="dark"] {
-  --bg-primary: #05050a;
-  --bg-secondary: #0a0a14;
-  --bg-card: rgba(15, 15, 30, 0.6);
-  --bg-card-hover: rgba(30, 30, 50, 0.8);
-  --glass-bg: rgba(255, 255, 255, 0.02);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-  --glow-accent: rgba(99, 102, 241, 0.15);
-  
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
-  
-  --accent-1: #6366f1;
-  --accent-2: #ec4899;
-  --accent-gradient: linear-gradient(135deg, #6366f1, #ec4899);
-  
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
-  
-  --bar-bg: rgba(255, 255, 255, 0.04);
-  --btn-bg: rgba(255, 255, 255, 0.03);
-  --btn-hover: rgba(99, 102, 241, 0.15);
-  --chart-grid: rgba(255, 255, 255, 0.03);
-  --chart-text: #64748b;
-}
-
-[data-theme="light"] {
-  --bg-primary: #f1f5f9;
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.7);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
-  --glass-bg: rgba(255, 255, 255, 0.5);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
-  --glow-accent: rgba(99, 102, 241, 0.1);
-  
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  
-  --accent-1: #6366f1;
-  --accent-2: #ec4899;
-  --accent-gradient: linear-gradient(135deg, #4f46e5, #ec4899);
-  
-  --success: #059669;
-  --warning: #d97706;
-  --danger: #dc2626;
-  --info: #2563eb;
-  
-  --bar-bg: rgba(0, 0, 0, 0.05);
-  --btn-bg: rgba(0, 0, 0, 0.02);
-  --btn-hover: rgba(99, 102, 241, 0.1);
-  --chart-grid: rgba(0, 0, 0, 0.05);
-  --chart-text: #475569;
-}
-
-/* ─── Reset & Base ──────────────────────────────────────────────────────── */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  transition: var(--transition);
-  overflow-x: hidden;
-}
-
-/* ─── Animated Grid Background ──────────────────────────────────────────── */
-body::before {
-  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background-image: 
-    linear-gradient(var(--glass-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
-  z-index: -2; pointer-events: none; opacity: 0.3;
-}
-body::after {
-  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-  background: radial-gradient(circle at 50% -20%, var(--glow-accent), transparent 60%);
-  z-index: -1; pointer-events: none;
-}
-
-h1, h2, h3, .logo, .stat-value { font-family: var(--font-heading); }
-
-/* ─── Top Navbar ────────────────────────────────────────────────────────── */
-.navbar {
-  position: sticky; top: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 3rem; background: var(--glass-bg); backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-}
-.logo { font-weight: 700; font-size: 1.8rem; letter-spacing: -1px; }
-.logo-life { color: var(--text-primary); }
-.logo-os { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-.nav-controls { display: flex; align-items: center; gap: 1.5rem; }
-.theme-toggle {
-  width: 48px; height: 26px; border-radius: 13px; background: var(--bar-bg);
-  border: 1px solid var(--glass-border); cursor: pointer; position: relative;
-}
-.theme-toggle::after {
-  content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
-  border-radius: 50%; background: var(--accent-gradient); transition: var(--transition);
-}
-[data-theme="light"] .theme-toggle::after { transform: translateX(22px); }
-
-.profile-badge {
-  display: flex; align-items: center; gap: 0.6rem; padding: 6px 14px;
-  background: var(--btn-bg); border: 1px solid var(--glass-border);
-  border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-  text-decoration: none; color: var(--text-primary); transition: var(--transition);
-}
-.profile-badge:hover { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); color: var(--danger); }
-
-/* ─── Container Matrix ──────────────────────────────────────────────────── */
-.container {
-  max-width: 1550px; margin: 0 auto; padding: 1rem 2rem;
-  display: grid;
-  grid-template-columns: 280px 1fr 300px;
-  grid-template-rows: auto auto auto;
-  gap: 1.2rem;
-}
-
-/* ─── Glass Card & Animations ───────────────────────────────────────────── */
-.card {
-  background: var(--bg-card); backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border); border-radius: var(--radius);
-  box-shadow: var(--glass-shadow); padding: 1.5rem; transition: var(--transition);
-}
-.card:hover { border-color: rgba(99,102,241,0.3); }
-.card-title {
-  font-family: var(--font-heading); font-size: 0.85rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);
-  margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;
-}
-
-@keyframes flashGreen { 0% { box-shadow: inset 0 0 20px rgba(16,185,129,0.5); } 100% { box-shadow: none; } }
-@keyframes flashRed { 0% { box-shadow: inset 0 0 20px rgba(239,68,100,0.5); } 100% { box-shadow: none; } }
-.flash-positive { animation: flashGreen 1s ease-out; }
-.flash-negative { animation: flashRed 1s ease-out; }
-
-/* ─── AI Life Coach Panel (Top Right) & Terminal ───────────────────────── */
-.coach-panel { 
-  grid-row: 1 / 3; grid-column: 3 / 4; 
-  background: linear-gradient(145deg, var(--bg-card), rgba(99,102,241,0.05)); 
-  border: 1px solid var(--accent-1); display: flex; flex-direction: column;
-  max-height: 500px;
-}
-.coach-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.coach-avatar { font-size: 1.8rem; }
-.auto-btn {
-  padding: 0.4rem 0.8rem; border-radius: 4px; border: 1px solid var(--danger); 
-  background: rgba(239, 68, 68, 0.1); color: var(--danger); font-size: 0.75rem; 
-  font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-  animation: pulseWarning 2s infinite; transition: var(--transition);
-}
-.auto-btn.active { background: var(--danger); color: white; animation: none; }
-@keyframes pulseWarning { 0%,100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 10px 2px rgba(239, 68, 68, 0); } }
-
-.terminal-feed {
-  flex: 1; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 6px;
-  border: 1px solid var(--glass-border); padding: 0.8rem; font-family: monospace;
-  font-size: 0.75rem; color: var(--success); line-height: 1.6; display: flex; flex-direction: column; gap: 0.5rem;
-  max-height: 400px; 
-}
-.terminal-line { border-left: 2px solid var(--accent-1); padding-left: 8px; animation: slideIn 0.3s ease-out; }
-@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
-/* ─── Score & Badges (Right column) ────────────────────────────────────── */
-.score-card { grid-row: 3 / 4; grid-column: 3 / 4; text-align: center; }
-.score-value { font-size: 3.5rem; font-weight: 700; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-.badges-card { grid-row: 3 / 4; grid-column: 3 / 4; }
-.badge-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; }
-.badge {
-  padding: 0.5rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.75rem; 
-  font-weight: 600; border: 1px solid var(--glass-border);
-  background: var(--bg-secondary); color: var(--text-secondary); opacity: 0.4;
-  transition: var(--transition); display: flex; align-items: center; gap: 0.4rem;
-}
-.badge.unlocked { opacity: 1; border-color: var(--accent-1); background: rgba(99,102,241,0.1); color: var(--text-primary); box-shadow: 0 0 15px rgba(99,102,241,0.2); }
-
-/* ─── Chart (Center Top) ─────────────────────────────────────────────────── */
-.chart-area { grid-column: 2 / 3; grid-row: 1 / 2; height: 320px; }
-
-/* ─── 10 Actions Grid (Center Bottom) ───────────────────────────────────── */
-.actions-area { grid-column: 2 / 3; grid-row: 2 / 4; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; }
-.action-btn {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
-  padding: 1rem 0.5rem; border-radius: var(--radius-sm);
-  background: var(--btn-bg); border: 1px solid var(--glass-border);
-  color: var(--text-primary); cursor: pointer; font-family: var(--font-heading);
-  font-size: 0.75rem; font-weight: 600; text-align: center; position: relative;
-  transition: var(--transition);
-}
-.action-btn:hover { background: var(--btn-hover); border-color: var(--accent-1); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(99,102,241,0.2); }
-.action-btn:active { transform: translateY(0); }
-.action-btn .icon { font-size: 2rem; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2)); }
-.action-btn.special { background: linear-gradient(145deg, rgba(236,72,153,0.1), rgba(99,102,241,0.1)); border-color: rgba(236,72,153,0.3); }
-
-/* Tooltips */
-.tooltip {
-  position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) translateY(10px);
-  background: var(--bg-secondary); border: 1px solid var(--glass-border);
-  padding: 0.8rem; border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--text-primary);
-  opacity: 0; pointer-events: none; transition: var(--transition); min-width: 140px;
-  text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 50; line-height: 1.4; font-family: var(--font-body);
-}
-.action-btn:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-@media (max-width: 1200px) {
-  .container { grid-template-columns: 280px 1fr; }
-  .coach-panel, .score-card { grid-column: 1 / -1; }
-  .actions-area { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* ─── Profile Modal ─────────────────────────────────────────────────────── */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-  background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(12px);
-  z-index: 1000; display: none; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.3s;
-}
-.modal-overlay.active { display: flex; opacity: 1; }
-.modal-content {
-  background: var(--bg-secondary); border: 1px solid var(--accent-1);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8); border-radius: var(--radius);
-  width: 90%; max-width: 500px; padding: 2.5rem; position: relative;
-  transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.modal-overlay.active .modal-content { transform: translateY(0); }
-.modal-close {
-  position: absolute; top: 1.5rem; right: 1.5rem; cursor: pointer; color: var(--text-muted);
-  font-size: 1.5rem; transition: var(--transition);
-}
-.modal-close:hover { color: var(--danger); }
-.profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; }
-.profile-avatar-large { font-size: 3.5rem; background: var(--btn-bg); padding: 1rem; border-radius: 50%; border: 1px solid var(--glass-border); box-shadow: inset 0 0 20px rgba(99,102,241,0.1); }
-.profile-name-large { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-primary); }
-.profile-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
-.profile-stat { background: var(--glass-bg); padding: 1.2rem; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); text-align: center; }
-.profile-stat-val { font-size: 1.8rem; font-weight: 700; color: var(--accent-1); font-family: var(--font-heading); background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.profile-stat-lbl { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.4rem;}
-.logout-btn { width: 100%; padding: 1rem; border-radius: var(--radius-sm); border: none; background: rgba(239, 68, 68, 0.1); color: var(--danger); font-weight: 600; cursor: pointer; transition: var(--transition); letter-spacing: 1px; }
-.logout-btn:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-
-.badge-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem; }
-.badge {
-  padding: 0.5rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.75rem; 
-  font-weight: 600; border: 1px solid var(--glass-border);
-  background: var(--bg-primary); color: var(--text-secondary); opacity: 0.4;
-  transition: var(--transition); display: flex; align-items: center; gap: 0.4rem;
-}
-.badge.unlocked { opacity: 1; border-color: var(--accent-1); background: rgba(99,102,241,0.1); color: var(--text-primary); box-shadow: 0 0 15px rgba(99,102,241,0.2); }
-
-/* ─── Toast Notifications ────────────────────────────────────────────────── */
-#toastContainer {
-  position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 9999;
-}
-.toast {
-  background: var(--bg-card); border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-1);
-  color: var(--text-primary); padding: 1rem 1.5rem; border-radius: var(--radius-sm);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.6); backdrop-filter: blur(12px);
-  animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, fadeOutToast 0.4s ease-in 3.5s forwards;
-  max-width: 380px; font-size: 0.85rem; line-height: 1.4; pointer-events: none;
-}
-@keyframes slideInToast { 0% { opacity: 0; transform: translateX(120%); } 100% { opacity: 1; transform: translateX(0); } }
-@keyframes fadeOutToast { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(120%); } }
-</style>
+<link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 
+<!-- Particle Background Canvas -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- SVG Gradient Definitions -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="healthGrad"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
+    <linearGradient id="moneyGrad"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient>
+    <linearGradient id="stressGrad"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f87171"/></linearGradient>
+    <linearGradient id="careerGrad"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient>
+    <linearGradient id="relationsGrad"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient>
+    <linearGradient id="happinessGrad"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f472b6"/></linearGradient>
+  </defs>
+</svg>
+
+<!-- Welcome Screen Overlay -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-box">
+    <div class="welcome-dna">🧬</div>
+    <h1>Welcome to LifeOS</h1>
+    <p>Navigate life's toughest decisions. Balance health, career, relationships, and finances.<br>How well can you live?</p>
+    <div class="welcome-features">
+      <div class="welcome-feat"><div class="wf-icon">❤️</div><div class="wf-label">Health</div></div>
+      <div class="welcome-feat"><div class="wf-icon">🚀</div><div class="wf-label">Career</div></div>
+      <div class="welcome-feat"><div class="wf-icon">💜</div><div class="wf-label">Relationships</div></div>
+      <div class="welcome-feat"><div class="wf-icon">💰</div><div class="wf-label">Wealth</div></div>
+    </div>
+    <div class="welcome-config">
+      <div class="wc-group"><label>Task</label><select id="wcTask"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
+      <div class="wc-group"><label>Personality</label><select id="wcPersonality"><option value="ambitious" selected>Ambitious</option><option value="conservative">Conservative</option><option value="risk_taker">Risk Taker</option><option value="lazy">Lazy</option></select></div>
+    </div>
+    <button class="welcome-start-btn" id="welcomeStartBtn">▶ Start Simulation</button>
+  </div>
+</div>
+
 <!-- Navbar -->
 <nav class="navbar">
-  <div class="logo"><span class="logo-life">Life</span><span class="logo-os">OS</span></div>
+  <div class="nav-left">
+    <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">☰</button>
+    <div class="logo"><span class="logo-icon">🧬</span><span class="logo-life">Life</span><span class="logo-os">OS</span></div>
+  </div>
   <div class="nav-controls">
-    <a href="#" class="profile-badge"><span id="profileAvatar">🧑‍🚀</span> <span id="profileName">User</span></a>
-    <div class="theme-toggle" id="themeToggle"></div>
+    <div class="nav-kbd">
+      <span><span class="kbd">Space</span> Step</span>
+      <span><span class="kbd">A</span> Auto</span>
+      <span><span class="kbd">R</span> Reset</span>
+    </div>
+    <div class="nav-status"><span class="dot"></span><span id="navStatusText">Ready</span></div>
+    <a href="#" class="profile-badge" id="profileBadge"><span id="profileAvatar">🧑‍🚀</span> <span id="profileName">User</span></a>
+    <div class="theme-toggle" id="themeToggle" title="Toggle theme"></div>
   </div>
 </nav>
 
-<div class="container">
+<div class="app-layout">
 
-  <!-- Left: Core Stats -->
-  <div class="stats-panel card" id="statsPanel">
-    <div class="card-title">👁️ Core Vitals</div>
-    <div id="statsContainer"></div>
-  </div>
-
-  <!-- Top Center: Timeline -->
-  <div class="card chart-area">
-    <div class="card-title">📈 Neural Trajectory</div>
-    <canvas id="timelineChart"></canvas>
-  </div>
-
-  <!-- Right: AI Coach / Terminal -->
-  <div class="card coach-panel">
-    <div class="coach-header">
-      <div class="card-title" style="margin:0;">🧠 Terminal</div>
-      <button id="autoPilotBtn" class="auto-btn">Engage AI</button>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Mode -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">🤖 Agent Mode</div>
+      <label>Control Mode</label>
+      <select id="cfgMode"><option value="manual">Manual Control</option><option value="auto">Autonomous AI</option></select>
     </div>
-    <div class="terminal-feed" id="terminalFeed">
-      <div class="terminal-line" style="color:var(--text-secondary)">> System initialized. Sentient logic standing by.</div>
+
+    <!-- Configuration -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">⚙️ Configuration</div>
+      <label>Evaluation Task</label>
+      <select id="cfgTask"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select>
+      <label>Personality</label>
+      <select id="cfgPersonality"><option value="ambitious" selected>Ambitious</option><option value="conservative">Conservative</option><option value="risk_taker">Risk Taker</option><option value="lazy">Lazy</option></select>
+      <label>Random Seed</label>
+      <input type="number" id="cfgSeed" value="42" min="0" max="9999">
+      <label>Max Steps</label>
+      <input type="range" id="cfgMaxSteps" min="10" max="200" value="100">
+      <div class="range-val" id="maxStepsVal">100</div>
+      <label>AI Speed (sec)</label>
+      <input type="range" id="cfgSpeed" min="0.3" max="3" step="0.1" value="1.5">
+      <div class="range-val" id="speedVal">1.50</div>
     </div>
-  </div>
-  
-  <div class="card score-card">
-    <div class="card-title">🎯 Terminal Grade</div>
-    <div class="score-value" id="scoreValue">0.00</div>
-  </div>
 
-  <!-- Bottom Center: 10 Actions Grid -->
-  <div class="card actions-area">
-    <!-- Base Actions -->
-    <button class="action-btn" data-action="work_overtime">
-      <span class="icon">💼</span><span>Overtime</span>
-      <div class="tooltip">+💰 $2000<br>+🚀 5 Career<br>-❤️ -3 Health<br>+😰 10 Stress</div>
-    </button>
-    <button class="action-btn" data-action="exercise">
-      <span class="icon">🏃</span><span>Exercise</span>
-      <div class="tooltip">+❤️ 8 Health<br>-😰 -7 Stress<br>+😊 5 Happiness</div>
-    </button>
-    <button class="action-btn" data-action="invest_money">
-      <span class="icon">📈</span><span>Invest</span>
-      <div class="tooltip">+💰 $3000<br>+🚀 3 Career<br>+😰 5 Stress</div>
-    </button>
-    <button class="action-btn" data-action="learn_skill">
-      <span class="icon">📚</span><span>Learn</span>
-      <div class="tooltip">+🚀 7 Career<br>+😊 3 Happiness<br>-💰 -$500</div>
-    </button>
-    <button class="action-btn" data-action="socialize">
-      <span class="icon">🤝</span><span>Socialize</span>
-      <div class="tooltip">+💜 8 Relations<br>+😊 7 Happiness<br>-💰 -$200</div>
-    </button>
-    <button class="action-btn" data-action="rest">
-      <span class="icon">😴</span><span>Rest</span>
-      <div class="tooltip">-😰 -10 Stress<br>+❤️ 5 Health<br>+😊 3 Happiness</div>
-    </button>
-    
-    <!-- Premium Expansion Actions -->
-    <button class="action-btn special" data-action="start_side_hustle">
-      <span class="icon">💻</span><span>Side Hustle</span>
-      <div class="tooltip">Extreme Gain/Drain:<br>+💰 $5000<br>+🚀 15 Career<br>+😰 25 Stress<br>-❤️ -10 Health</div>
-    </button>
-    <button class="action-btn special" data-action="take_vacation">
-      <span class="icon">🏝️</span><span>Vacation</span>
-      <div class="tooltip">Expensive Purge:<br>-💰 -$4000<br>-😰 -40 Stress<br>+😊 20 Happiness<br>+❤️ 15 Health</div>
-    </button>
-    <button class="action-btn special" data-action="meditate">
-      <span class="icon">🧘</span><span>Meditate</span>
-      <div class="tooltip">Inner Peace:<br>-😰 -15 Stress<br>+😊 10 Happiness<br>+❤️ 5 Health</div>
-    </button>
-    <button class="action-btn special" data-action="gamble">
-      <span class="icon">🎰</span><span>Gamble</span>
-      <div class="tooltip">High Risk (Bet 15%):<br>50% to DOUBLE<br>50% to LOSE<br>+😰 15 Stress</div>
-    </button>
-  </div>
+    <!-- Controls -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">🎮 Execution</div>
+      <div class="ctrl-grid">
+        <button class="ctrl-btn primary" id="btnInit">▶ Initialize</button>
+        <button class="ctrl-btn danger" id="btnReset">🔄 Reset</button>
+        <button class="ctrl-btn success" id="btnStepAI">⚡ Step AI</button>
+        <button class="ctrl-btn warn" id="btnAutoExec">🤖 Auto-Run</button>
+      </div>
+    </div>
 
+    <!-- Live Info -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">📊 Simulation</div>
+      <div class="sidebar-info">
+        <div class="info-row"><span>Step:</span><span id="infoStep">0</span></div>
+        <div class="info-row"><span>Age:</span><span id="infoAge">20.0 yrs</span></div>
+        <div class="info-row"><span>Week:</span><span id="infoWeek">0</span></div>
+        <div class="info-row"><span>Status:</span><span id="infoStatus" style="color:var(--success)">Idle</span></div>
+      </div>
+    </div>
+
+    <!-- Score Ring -->
+    <div class="score-display">
+      <div class="score-ring-container">
+        <svg viewBox="0 0 90 90">
+          <circle class="score-ring-bg" cx="45" cy="45" r="40"/>
+          <circle class="score-ring-fill" id="scoreRing" cx="45" cy="45" r="40"/>
+        </svg>
+        <div class="score-ring-text">
+          <span class="score-label">Grade</span>
+          <span class="score-val" id="scoreValue">0.00</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-name" id="heroName">RANJU's Digital Life</div>
+      <div class="hero-sub">Navigate life's decisions • Aspiring Engineer</div>
+    </div>
+
+    <!-- Stat Cards (Circular Gauges) -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card" id="sc-health" style="--stat-color:#10b981">
+        <div class="stat-gauge"><svg viewBox="0 0 60 60"><circle class="gauge-bg" cx="30" cy="30" r="26"/><circle class="gauge-fill" cx="30" cy="30" r="26" stroke="url(#healthGrad)" id="gauge-health"/></svg><div class="stat-gauge-center">❤️</div></div>
+        <div class="stat-label">Health</div>
+        <div class="stat-value" style="color:#10b981">80.0</div>
+        <div class="stat-delta" id="delta-health"></div>
+      </div>
+      <div class="stat-card" id="sc-money" style="--stat-color:#f59e0b">
+        <div class="stat-gauge"><svg viewBox="0 0 60 60"><circle class="gauge-bg" cx="30" cy="30" r="26"/><circle class="gauge-fill" cx="30" cy="30" r="26" stroke="url(#moneyGrad)" id="gauge-money"/></svg><div class="stat-gauge-center">💰</div></div>
+        <div class="stat-label">Money</div>
+        <div class="stat-value" style="color:#f59e0b">$5,000</div>
+        <div class="stat-delta" id="delta-money"></div>
+      </div>
+      <div class="stat-card" id="sc-stress" style="--stat-color:#ef4444">
+        <div class="stat-gauge"><svg viewBox="0 0 60 60"><circle class="gauge-bg" cx="30" cy="30" r="26"/><circle class="gauge-fill" cx="30" cy="30" r="26" stroke="url(#stressGrad)" id="gauge-stress"/></svg><div class="stat-gauge-center">😰</div></div>
+        <div class="stat-label">Stress</div>
+        <div class="stat-value" style="color:#ef4444">20.0</div>
+        <div class="stat-delta" id="delta-stress"></div>
+      </div>
+      <div class="stat-card" id="sc-career" style="--stat-color:#3b82f6">
+        <div class="stat-gauge"><svg viewBox="0 0 60 60"><circle class="gauge-bg" cx="30" cy="30" r="26"/><circle class="gauge-fill" cx="30" cy="30" r="26" stroke="url(#careerGrad)" id="gauge-career"/></svg><div class="stat-gauge-center">🚀</div></div>
+        <div class="stat-label">Career</div>
+        <div class="stat-value" style="color:#3b82f6">10.0</div>
+        <div class="stat-delta" id="delta-career"></div>
+      </div>
+      <div class="stat-card" id="sc-relationships" style="--stat-color:#8b5cf6">
+        <div class="stat-gauge"><svg viewBox="0 0 60 60"><circle class="gauge-bg" cx="30" cy="30" r="26"/><circle class="gauge-fill" cx="30" cy="30" r="26" stroke="url(#relationsGrad)" id="gauge-relationships"/></svg><div class="stat-gauge-center">💜</div></div>
+        <div class="stat-label">Relations</div>
+        <div class="stat-value" style="color:#8b5cf6">50.0</div>
+        <div class="stat-delta" id="delta-relationships"></div>
+      </div>
+      <div class="stat-card" id="sc-happiness" style="--stat-color:#ec4899">
+        <div class="stat-gauge"><svg viewBox="0 0 60 60"><circle class="gauge-bg" cx="30" cy="30" r="26"/><circle class="gauge-fill" cx="30" cy="30" r="26" stroke="url(#happinessGrad)" id="gauge-happiness"/></svg><div class="stat-gauge-center">😊</div></div>
+        <div class="stat-label">Happiness</div>
+        <div class="stat-value" style="color:#ec4899">60.0</div>
+        <div class="stat-delta" id="delta-happiness"></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="timeline">📈 Timeline</button>
+        <button class="tab-btn" data-tab="events">🚨 Events</button>
+        <button class="tab-btn" data-tab="decisions">🧠 AI Decisions</button>
+        <button class="tab-btn" data-tab="rewards">📊 Rewards</button>
+      </div>
+      <div class="tab-content active" id="tab-timeline"><div class="chart-wrap"><canvas id="timelineChart"></canvas></div></div>
+      <div class="tab-content" id="tab-events"><div class="log-list" id="eventsLog"><div class="log-empty">No events triggered yet. Events appear on Medium & Hard difficulty.</div></div></div>
+      <div class="tab-content" id="tab-decisions"><div class="log-list" id="decisionsLog"><div class="log-empty">No AI decisions yet. Use Step AI or Auto-Run.</div></div></div>
+      <div class="tab-content" id="tab-rewards"><div class="chart-wrap"><canvas id="rewardsChart"></canvas></div></div>
+    </div>
+
+    <!-- Actions Grid -->
+    <div class="actions-section" id="actionsGrid">
+      <button class="action-btn" data-action="work_overtime"><span class="icon">💼</span><span>Overtime</span><div class="tooltip">+💰 $2000<br>+🚀 5 Career<br>-❤️ -3 Health<br>+😰 10 Stress</div></button>
+      <button class="action-btn" data-action="exercise"><span class="icon">🏃</span><span>Exercise</span><div class="tooltip">+❤️ 8 Health<br>-😰 -7 Stress<br>+😊 5 Happiness</div></button>
+      <button class="action-btn" data-action="invest_money"><span class="icon">📈</span><span>Invest</span><div class="tooltip">+💰 $3000<br>+🚀 3 Career<br>+😰 5 Stress</div></button>
+      <button class="action-btn" data-action="learn_skill"><span class="icon">📚</span><span>Learn</span><div class="tooltip">+🚀 7 Career<br>+😊 3 Happiness<br>-💰 -$500</div></button>
+      <button class="action-btn" data-action="socialize"><span class="icon">🤝</span><span>Socialize</span><div class="tooltip">+💜 8 Relations<br>+😊 7 Happiness<br>-💰 -$200</div></button>
+      <button class="action-btn" data-action="rest"><span class="icon">😴</span><span>Rest</span><div class="tooltip">-😰 -10 Stress<br>+❤️ 5 Health<br>+😊 3 Happiness</div></button>
+      <button class="action-btn special" data-action="start_side_hustle"><span class="icon">💻</span><span>Side Hustle</span><div class="tooltip">EXTREME:<br>+💰 $5000<br>+🚀 15 Career<br>+😰 25 Stress</div></button>
+      <button class="action-btn special" data-action="take_vacation"><span class="icon">🏝️</span><span>Vacation</span><div class="tooltip">RESET:<br>-💰 -$4000<br>-😰 -40 Stress<br>+😊 20 Happy</div></button>
+      <button class="action-btn special" data-action="meditate"><span class="icon">🧘</span><span>Meditate</span><div class="tooltip">PEACE:<br>-😰 -15 Stress<br>+😊 10 Happy<br>+❤️ 5 Health</div></button>
+      <button class="action-btn special" data-action="gamble"><span class="icon">🎰</span><span>Gamble</span><div class="tooltip">RISK:<br>50% DOUBLE<br>50% LOSE<br>+😰 15 Stress</div></button>
+    </div>
+
+    <!-- Terminal -->
+    <div class="terminal-panel">
+      <div class="terminal-header">
+        <div class="sidebar-title" style="margin:0">🧠 AI Terminal</div>
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="terminal-feed" id="terminalFeed">
+        <div class="terminal-line" style="color:var(--text-secondary)">> System initialized. Sentient logic standing by.</div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
-<!-- User Profile Modal Overlay -->
+<!-- Profile Modal -->
 <div class="modal-overlay" id="profileOverlay">
   <div class="modal-content">
     <div class="modal-close" id="closeProfile">✕</div>
     <div class="profile-header">
-      <div class="profile-avatar-large" id="modalAvatar">🧑‍🚀</div>
-      <div class="profile-name-large" id="modalName">User</div>
+      <div class="profile-avatar-lg" id="modalAvatar">🧑‍🚀</div>
+      <div class="profile-name-lg" id="modalName">User</div>
     </div>
-    
-    <div class="card-title">🎖️ Lifetime Achievements</div>
+    <div class="sidebar-title">🎖️ Achievements</div>
     <div class="badge-grid">
       <div class="badge" id="badge-wealth">💎 Wealth Builder</div>
       <div class="badge" id="badge-zen">🧘 Zen Master</div>
       <div class="badge" id="badge-hustle">🔥 Hustler</div>
       <div class="badge" id="badge-survivor">🩸 Survivor</div>
     </div>
-
-    <div class="card-title">📊 Legacy Statistics</div>
+    <div class="sidebar-title">📊 Legacy Stats</div>
     <div class="profile-stat-grid">
-      <div class="profile-stat">
-        <div class="profile-stat-val" id="statRuns">0</div>
-        <div class="profile-stat-lbl">Simulations</div>
-      </div>
-      <div class="profile-stat">
-        <div class="profile-stat-val" id="statPeak">0.0</div>
-        <div class="profile-stat-lbl">Peak Grade</div>
-      </div>
-      <div class="profile-stat">
-        <div class="profile-stat-val" id="statCap">$0</div>
-        <div class="profile-stat-lbl">Total Capital</div>
-      </div>
-      <div class="profile-stat">
-        <div class="profile-stat-val" id="statSteps">0</div>
-        <div class="profile-stat-lbl">Total Steps</div>
-      </div>
+      <div class="profile-stat"><div class="profile-stat-val" id="statRuns">0</div><div class="profile-stat-lbl">Simulations</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="statPeak">0.0</div><div class="profile-stat-lbl">Peak Grade</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="statCap">$0</div><div class="profile-stat-lbl">Total Capital</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="statSteps">0</div><div class="profile-stat-lbl">Total Steps</div></div>
     </div>
-    
-    <button class="logout-btn" id="logoutBtn">TERMINATE SESSION (LOG OUT)</button>
+    <button class="logout-btn" id="logoutBtn">TERMINATE SESSION</button>
   </div>
 </div>
 
 <div id="toastContainer"></div>
-
-<script>
-// Authentication redirect
-const currentUser = localStorage.getItem('lifeos-user');
-if (!currentUser) window.location.href = '/login';
-document.getElementById('profileName').textContent = currentUser;
-document.getElementById('modalName').textContent = currentUser;
-const uAv = localStorage.getItem('lifeos-avatar') || '🧑‍🚀';
-document.getElementById('profileAvatar').textContent = uAv;
-document.getElementById('modalAvatar').textContent = uAv;
-
-// Modal Toggles
-document.querySelector('.profile-badge').onclick = (e) => { 
-  e.preventDefault(); 
-  document.getElementById('profileOverlay').classList.add('active'); 
-  renderProfileStats(); // Ensures UI is synced
-};
-document.getElementById('closeProfile').onclick = () => document.getElementById('profileOverlay').classList.remove('active');
-document.getElementById('logoutBtn').onclick = () => { localStorage.clear(); window.location.reload(); };
-
-// Theme
-document.getElementById('themeToggle').onclick = () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  updateChartColors();
-};
-
-const STAT_CONFIG = {
-  age:           { label: 'Age',           max: 100,    col: '#94a3b8', ic: '🎂' },
-  health:        { label: 'Health',        max: 100,    col: '#10b981', ic: '❤️' },
-  money:         { label: 'Capital',       max: 100000, col: '#f59e0b', ic: '💵' },
-  stress:        { label: 'Stress',        max: 100,    col: '#ef4444', ic: '⚠️' },
-  career:        { label: 'Trajectory',    max: 100,    col: '#3b82f6', ic: '🚀' },
-  relationships: { label: 'Synergy',       max: 100,    col: '#8b5cf6', ic: '💜' },
-  happiness:     { label: 'Serotonin',     max: 100,    col: '#ec4899', ic: '✨' },
-};
-
-let stepCount = 0; let isDone = false;
-let currentStats = {};
-
-// Lifetime Storage Init
-let lifetimeStats = JSON.parse(localStorage.getItem('lifeos-stats') || '{"runs":0, "peak":0, "capital":0, "steps":0}');
-let badges = JSON.parse(localStorage.getItem('lifeos-badges') || '{"wealth":false, "zen":false, "hustle":false, "survivor":false}');
-
-// Sync UI on load
-function renderProfileStats() {
-  document.getElementById('statRuns').textContent = lifetimeStats.runs;
-  document.getElementById('statPeak').textContent = lifetimeStats.peak.toFixed(2);
-  document.getElementById('statCap').textContent = `$${(lifetimeStats.capital/1000).toFixed(1)}k`;
-  document.getElementById('statSteps').textContent = lifetimeStats.steps;
-  
-  if (badges.wealth) document.getElementById('badge-wealth').classList.add('unlocked');
-  if (badges.zen) document.getElementById('badge-zen').classList.add('unlocked');
-  if (badges.hustle) document.getElementById('badge-hustle').classList.add('unlocked');
-  if (badges.survivor) document.getElementById('badge-survivor').classList.add('unlocked');
-}
-renderProfileStats();
-
-// Real-Time UI Engine
-function renderStats(state) {
-  const container = document.getElementById('statsContainer');
-  container.innerHTML = '';
-  let highestDelta = 0; let type = 'positive';
-  
-  for (const [key, cfg] of Object.entries(STAT_CONFIG)) {
-    const val = state[key] ?? 0;
-    const pct = Math.min(100, (val / cfg.max) * 100);
-    const display = key === 'money' ? `$${Math.round(val).toLocaleString()}` : val.toFixed(1);
-    
-    // Animation tracking
-    if (currentStats[key] !== undefined) {
-      const diff = val - currentStats[key];
-      if (Math.abs(diff) > Math.abs(highestDelta)) {
-        highestDelta = diff;
-        type = (key === 'stress' ? diff < 0 : diff > 0) ? 'positive' : 'negative';
-      }
-    }
-    currentStats[key] = val;
-
-    container.innerHTML += `
-      <div class="stat-card">
-        <div class="stat-header"><span>${cfg.ic} ${cfg.label}</span><span style="color:${cfg.col};font-weight:700">${display}</span></div>
-        <div class="stat-bar"><div class="stat-bar-fill" style="width:${pct}%;background:${cfg.col}"></div></div>
-      </div>`;
-  }
-  
-  if (Math.abs(highestDelta) > 1) {
-    const p = document.getElementById('statsPanel');
-    p.classList.remove('flash-positive', 'flash-negative');
-    void p.offsetWidth;
-    p.classList.add(`flash-${type}`);
-  }
-}
-
-// Evaluation & Badges persist
-function evaluateGameState(s) {
-  let changed = false;
-  if (s.money >= 50000 && !badges.wealth) { badges.wealth = true; changed = true; }
-  if (s.stress <= 10 && s.happiness > 80 && !badges.zen) { badges.zen = true; changed = true; }
-  if (s.career > 85 && !badges.hustle) { badges.hustle = true; changed = true; }
-  if (s.stress >= 90 && s.health > 10 && !badges.survivor) { badges.survivor = true; changed = true; }
-  if (changed) {
-    localStorage.setItem('lifeos-badges', JSON.stringify(badges));
-    renderProfileStats();
-  }
-}
-
-// Chart Logic
-const ctx = document.getElementById('timelineChart').getContext('2d');
-const chart = new Chart(ctx, {
-  type: 'line',
-  data: { labels: [], datasets: [
-    { label: 'Health', data: [], borderColor: '#10b981', tension: 0.4 },
-    { label: 'Stress', data: [], borderColor: '#ef4444', tension: 0.4 },
-    { label: 'Capital/1k', data: [], borderColor: '#f59e0b', tension: 0.4 },
-    { label: 'Trajectory', data: [], borderColor: '#3b82f6', tension: 0.4 },
-    { label: 'Serotonin', data: [], borderColor: '#ec4899', tension: 0.4 }
-  ]},
-  options: { responsive: true, maintainAspectRatio: false, elements: { point:{radius:0} }, scales: { y: { min:0, max:100 } } }
-});
-
-function updateChartColors() { chart.update('none'); }
-function pushHistory(s) {
-  chart.data.labels.push(stepCount);
-  chart.data.datasets[0].data.push(s.health);
-  chart.data.datasets[1].data.push(s.stress);
-  chart.data.datasets[2].data.push(Math.min(100, s.money/1000));
-  chart.data.datasets[3].data.push(s.career);
-  chart.data.datasets[4].data.push(s.happiness);
-  if(chart.data.labels.length > 50) { chart.data.labels.shift(); chart.data.datasets.forEach(d=>d.data.shift()); }
-  chart.update('none');
-}
-
-const ACTION_MSGS = {
-   work_overtime: { t: "Overtime Completed", m: "Capital injected into your accounts, but stress levels spiked.", c: "var(--info)" },
-   exercise: { t: "Physical Protocol", m: "Health increased. Neural pathways optimized.", c: "var(--success)" },
-   invest_money: { t: "Asset Allocation", m: "Capital deployed to high-yield markets.", c: "var(--info)" },
-   learn_skill: { t: "Data Acquisition", m: "Career trajectory steepened. Multi-threading enabled.", c: "var(--info)" },
-   socialize: { t: "Synergy Network", m: "Social bonds strengthened. Serotonin levels improved.", c: "var(--success)" },
-   rest: { t: "System Standby", m: "Deep recalibration. Stress levels significantly reduced.", c: "var(--success)" },
-   start_side_hustle: { t: "Aggressive Expansion", m: "Massive capital influx at the cost of extreme stress.", c: "var(--warning)" },
-   take_vacation: { t: "Sensory Reset", m: "Biological reset completed. Absolute peace attained.", c: "var(--success)" },
-   meditate: { t: "Zen Protocol", m: "Perfect equilibrium achieved. Inner peace established.", c: "var(--success)" },
-   gamble: { t: "Calculated Volatility", m: "Probability matrix engaged. Check your capital balance.", c: "var(--warning)" },
-};
-
-function showToast(title, msg, color="var(--accent-1)") {
-  const container = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.style.borderLeftColor = color;
-  t.innerHTML = `<strong style="color:${color};display:block;margin-bottom:5px;font-family:var(--font-heading);letter-spacing:1px;text-transform:uppercase;">${title}</strong>${msg}`;
-  container.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
-}
-
-// API Comm
-async function init() {
-  await fetch('/reset', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({task:'medium', personality:'ambitious'}) });
-  const resFull = await fetch('/state_full', { method: 'POST' });
-  const st = await resFull.json();
-  renderStats(st); pushHistory(st); evaluateGameState(st);
-}
-async function takeAction(action) {
-  if (isDone) return;
-  const res = await fetch('/step', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({action}) });
-  const data = await res.json();
-  const st = data.info.full_state;
-  stepCount++; lifetimeStats.steps++; 
-  const moneyEarned = st.money - (currentStats.money || st.money);
-  if (moneyEarned > 0) lifetimeStats.capital += moneyEarned;
-  localStorage.setItem('lifeos-stats', JSON.stringify(lifetimeStats));
-  renderStats(st); pushHistory(st); evaluateGameState(st);
-  document.getElementById('scoreValue').textContent = data.reward.toFixed(2);
-  
-  // UI Motivation Action Toast
-  const am = ACTION_MSGS[action];
-  if(am) showToast(am.t, am.m, am.c);
-  
-  // Surfacing Backend Random Events!
-  if(data.info.event_description) {
-     showToast("⚠️ SYSTEM ANOMALY", data.info.event_description, "var(--warning)");
-  }
-  
-  if (data.done) {
-    isDone = true;
-    logTerminal(`<span style="color:var(--danger)">[FATAL] TERMINATION ALGORITHM EXECUTED. REASON: ${data.info.termination_reason}</span>`);
-    document.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
-    if (autoPilotInterval) toggleAutoPilot();
-    
-    // Finalize lifetime values
-    lifetimeStats.runs++;
-    lifetimeStats.peak = Math.max(lifetimeStats.peak, data.reward);
-    localStorage.setItem('lifeos-stats', JSON.stringify(lifetimeStats));
-  }
-}
-
-// ─── Auto Pilot ──────────────────────────────────────────────────────────
-let autoPilotInterval = null;
-const terminal = document.getElementById('terminalFeed');
-
-function logTerminal(msg) {
-  terminal.innerHTML += `<div class="terminal-line">> ${msg}</div>`;
-  if(terminal.childElementCount > 30) terminal.firstElementChild.remove();
-  terminal.scrollTop = terminal.scrollHeight;
-}
-
-async function runAutoPilotStep() {
-  if (isDone) return toggleAutoPilot();
-  const stRes = await fetch('/state_full', { method: 'POST' });
-  const st = await stRes.json();
-  const analysisRes = await fetch('/auto_step', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({state: st}) });
-  const aiData = await analysisRes.json();
-  
-  logTerminal(`[AI] ${aiData.reasoning}`);
-  logTerminal(`[SYS] Executing: <span style="color:white">${aiData.action.toUpperCase()}</span>`);
-  
-  const btn = document.querySelector(`[data-action="${aiData.action}"]`);
-  if(btn) { btn.classList.add('flash-positive'); setTimeout(()=>btn.classList.remove('flash-positive'), 500); }
-  await takeAction(aiData.action);
-}
-
-function toggleAutoPilot() {
-  const btn = document.getElementById('autoPilotBtn');
-  if (autoPilotInterval) {
-    clearInterval(autoPilotInterval);
-    autoPilotInterval = null;
-    btn.textContent = "Engage AI";
-    btn.classList.remove('active');
-    logTerminal("<span style='color:var(--warning)'>[SYS] Manual control restored.</span>");
-  } else {
-    logTerminal("<span style='color:var(--accent-1)'>[SYS] SENTIENT OVERRIDE ENGAGED. Lock controls.</span>");
-    btn.textContent = "Stop AI";
-    btn.classList.add('active');
-    autoPilotInterval = setInterval(runAutoPilotStep, 2000); // Wait 2s between AI moves
-  }
-}
-document.getElementById('autoPilotBtn').onclick = toggleAutoPilot;
-
-document.querySelectorAll('.action-btn').forEach(btn => btn.onclick = () => { if(!autoPilotInterval) takeAction(btn.dataset.action); });
-init();
-</script>
+<script src="/static/app.js"></script>
 </body>
 </html>
