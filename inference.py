@@ -1,20 +1,33 @@
 """
 LifeOS Inference Script — REQUIRED for OpenEnv validation.
 
+Prints structured [START]/[STEP]/[END] blocks to stdout so the
+automated validator can parse task scores.
+
 Steps:
   1. Initialize env for each task (easy, medium, hard)
   2. Run agent loop (LLM when available, heuristic fallback)
-  3. Collect final state
-  4. Call grader
-  5. Print scores
+  3. Print [STEP] after every env.step()
+  4. Grade final state
+  5. Print [END] with score
 
 Uses OpenAI Client for LLM calls via API_BASE_URL, MODEL_NAME, HF_TOKEN.
 """
+
+# ── Force unbuffered stdout BEFORE anything else ─────────────────────────────
 import os
+import sys
+
+os.environ["PYTHONUNBUFFERED"] = "1"
+
 import random
 import json
 
-from openai import OpenAI
+# ── Guard openai import — must never crash the script ────────────────────────
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
 
 from lifeos.env import LifeOSEnv
 from lifeos.utils import grade_agent
@@ -81,88 +94,84 @@ def heuristic_action(state):
 
 
 def run_task(task_name, use_llm=False, client=None):
-    """Run one task episode, return results dict."""
+    """
+    Run one task episode.
+
+    Prints the REQUIRED structured output:
+      [START] task=<name>
+      [STEP] step=<n> reward=<r>
+      ...
+      [END] task=<name> score=<s> steps=<n>
+    """
     env = LifeOSEnv(personality="ambitious", task=task_name, seed=42)
     state = env.reset()
+
+    # ── [START] block ────────────────────────────────────────────────────────
+    print(f"[START] task={task_name}", flush=True)
+
     total_reward = 0.0
-    events = []
     steps = 0
 
     for i in range(MAX_STEPS):
+        # Choose action
         action = None
         if use_llm and client:
             action = get_llm_action(client, state, i)
         if action is None:
             action = heuristic_action(state)
 
+        # Execute action
         result = env.step(action)
         state = result["state"]
-        total_reward += result["reward"]
-        if "event" in result["info"]:
-            events.append(result["info"]["event"])
+        reward = result["reward"]
+        total_reward += reward
         steps = i + 1
+
+        # ── [STEP] block ────────────────────────────────────────────────────
+        print(f"[STEP] step={steps} reward={round(reward, 4)}", flush=True)
+
         if result["done"]:
             break
 
+    # Grade final state
     score = grade_agent(state)
+
+    # ── [END] block ──────────────────────────────────────────────────────────
+    print(f"[END] task={task_name} score={round(score, 4)} steps={steps}", flush=True)
+
     return {
         "task": task_name,
         "final_state": state,
         "score": score,
         "total_reward": round(total_reward, 4),
         "steps": steps,
-        "events": events,
     }
 
 
 def main():
-    print("=" * 60)
-    print("  LifeOS - AI Digital Life Simulator")
-    print("  Inference Script")
-    print("=" * 60)
-
-    # Try LLM client
+    # ── Try LLM client ───────────────────────────────────────────────────────
     use_llm = False
     client = None
-    if API_BASE_URL and MODEL_NAME and HF_TOKEN:
+    if API_BASE_URL and MODEL_NAME and HF_TOKEN and OpenAI is not None:
         try:
             client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
             use_llm = True
-            print(f"\n[OK] LLM client ready: {MODEL_NAME}")
-        except Exception as e:
-            print(f"\n[WARN] LLM init failed: {e}. Heuristic mode.")
-    else:
-        print("\n[INFO] No LLM creds. Using heuristic agent.")
+        except Exception:
+            pass
 
+    # ── Run all tasks ────────────────────────────────────────────────────────
     results = {}
     for task in TASKS:
-        print(f"\n{'-'*50}")
-        print(f"  Task: {task.upper()}")
-        print(f"{'-'*50}")
-
         r = run_task(task, use_llm=use_llm, client=client)
         results[task] = r
-
-        print(f"  Steps:        {r['steps']}")
-        print(f"  Total reward: {r['total_reward']}")
-        print(f"  Events:       {len(r['events'])}")
-        print(f"  Final State:")
-        for k, v in r["final_state"].items():
-            print(f"    {k:>15}: {v}")
-        print(f"  Grade Score:  {r['score']:.4f}")
-
-    # Summary
-    print(f"\n{'='*60}")
-    print("  FINAL SCORES")
-    print(f"{'='*60}")
-    for t in TASKS:
-        print(f"  {t:>8}: {results[t]['score']:.4f}")
-    avg = sum(results[t]["score"] for t in TASKS) / len(TASKS)
-    print(f"  {'average':>8}: {avg:.4f}")
-    print(f"{'='*60}")
 
     return results
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        # Even on crash, print something so the validator sees output
+        print(f"[ERROR] inference.py crashed: {e}", flush=True)
+        sys.exit(1)
