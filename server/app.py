@@ -12,7 +12,8 @@ from pydantic import BaseModel
 try:
     from inference import heuristic_action
 except ImportError:
-    def heuristic_action(state: dict) -> str: return "rest"
+    def heuristic_action(state: dict) -> str:
+        return "rest"
 
 from lifeos.env import LifeOSEnv
 from lifeos.models import LifeState, StepResponse
@@ -100,21 +101,24 @@ async def auto_step_ui(req: Request):
 async def dashboard():
     path = os.path.join(os.path.dirname(__file__), "..", "static", "index.html")
     if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f: return HTMLResponse(content=f.read())
+        with open(path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
     return HTMLResponse(content="<h1>LifeOS</h1>")
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page():
     path = os.path.join(os.path.dirname(__file__), "..", "static", "login.html")
     if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f: return HTMLResponse(content=f.read())
+        with open(path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
     return HTMLResponse(content="<h1>LifeOS Login</h1>")
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page():
     path = os.path.join(os.path.dirname(__file__), "..", "static", "register.html")
     if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f: return HTMLResponse(content=f.read())
+        with open(path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
     return HTMLResponse(content="<h1>LifeOS Register</h1>")
 
 def main():

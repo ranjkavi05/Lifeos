@@ -44,15 +44,15 @@ try:
     from lifeos.env import LifeOSEnv
     from lifeos.utils import grade_agent
 except ImportError:
-    print(f"[START] task=easy", flush=True)
-    print(f"[STEP] step=1 reward=0.0", flush=True)
-    print(f"[END] task=easy score=0.0 steps=1", flush=True)
-    print(f"[START] task=medium", flush=True)
-    print(f"[STEP] step=1 reward=0.0", flush=True)
-    print(f"[END] task=medium score=0.0 steps=1", flush=True)
-    print(f"[START] task=hard", flush=True)
-    print(f"[STEP] step=1 reward=0.0", flush=True)
-    print(f"[END] task=hard score=0.0 steps=1", flush=True)
+    print("[START] task=easy", flush=True)
+    print("[STEP] step=1 reward=0.0", flush=True)
+    print("[END] task=easy score=0.0 steps=1", flush=True)
+    print("[START] task=medium", flush=True)
+    print("[STEP] step=1 reward=0.0", flush=True)
+    print("[END] task=medium score=0.0 steps=1", flush=True)
+    print("[START] task=hard", flush=True)
+    print("[STEP] step=1 reward=0.0", flush=True)
+    print("[END] task=hard score=0.0 steps=1", flush=True)
     sys.exit(0)
 
 # Reproducibility
@@ -60,13 +60,8 @@ random.seed(42)
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 API_BASE_URL = os.environ.get("API_BASE_URL", "")
-<<<<<<< HEAD
 MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-3.5-turbo"
 API_KEY = os.environ.get("API_KEY") or os.environ.get("HF_TOKEN") or "sk-dummy"
-=======
-MODEL_NAME = os.environ.get("MODEL_NAME", "")
-API_KEY = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", ""))
->>>>>>> b208de557c0ef4ccc0296e5544238f13d812ccea
 
 MAX_STEPS = 100
 TASKS = ["easy", "medium", "hard"]
@@ -111,15 +106,24 @@ def heuristic_action(state):
     c = state.get("career", 50)
     r = state.get("relationships", 50)
 
-    if st > 70:   return "rest"
-    if h < 40:    return "exercise"
-    if m < 2000:  return "work_overtime"
-    if r < 30:    return "socialize"
-    if c < 30:    return "learn_skill"
-    if m > 10000: return "invest_money"
-    if st > 40:   return "exercise"
-    if c < 50:    return "learn_skill"
-    if r < 50:    return "socialize"
+    if st > 70:
+        return "rest"
+    if h < 40:
+        return "exercise"
+    if m < 2000:
+        return "work_overtime"
+    if r < 30:
+        return "socialize"
+    if c < 30:
+        return "learn_skill"
+    if m > 10000:
+        return "invest_money"
+    if st > 40:
+        return "exercise"
+    if c < 50:
+        return "learn_skill"
+    if r < 50:
+        return "socialize"
     return random.choice(ACTIONS)
 
 
@@ -141,7 +145,7 @@ def run_task(task_name, use_llm=False, client=None):
         state = env.reset()
     except Exception:
         # If env fails, print a minimal valid block
-        print(f"[STEP] step=1 reward=0.0", flush=True)
+        print("[STEP] step=1 reward=0.0", flush=True)
         print(f"[END] task={task_name} score=0.0 steps=1", flush=True)
         return {"task": task_name, "final_state": {}, "score": 0.0, "total_reward": 0.0, "steps": 1}
 
@@ -212,7 +216,7 @@ def main():
         except Exception:
             # Last-resort: print minimal valid block
             print(f"[START] task={task}", flush=True)
-            print(f"[STEP] step=1 reward=0.0", flush=True)
+            print("[STEP] step=1 reward=0.0", flush=True)
             print(f"[END] task={task} score=0.0 steps=1", flush=True)
 
     return results
@@ -225,6 +229,6 @@ if __name__ == "__main__":
         # Even on total crash, emit valid structured output
         for task in ["easy", "medium", "hard"]:
             print(f"[START] task={task}", flush=True)
-            print(f"[STEP] step=1 reward=0.0", flush=True)
+            print("[STEP] step=1 reward=0.0", flush=True)
             print(f"[END] task={task} score=0.0 steps=1", flush=True)
         sys.exit(0)
