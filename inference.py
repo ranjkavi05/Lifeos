@@ -11,7 +11,7 @@ Steps:
   4. Grade final state
   5. Print [END] with score
 
-Uses OpenAI Client for LLM calls via API_BASE_URL, MODEL_NAME, HF_TOKEN.
+Uses OpenAI Client for LLM calls via API_BASE_URL, MODEL_NAME, API_KEY.
 """
 
 # ── Force unbuffered stdout BEFORE anything else ─────────────────────────────
@@ -60,8 +60,8 @@ random.seed(42)
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 API_BASE_URL = os.environ.get("API_BASE_URL", "")
-MODEL_NAME = os.environ.get("MODEL_NAME", "")
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
+MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-3.5-turbo"
+API_KEY = os.environ.get("API_KEY") or os.environ.get("HF_TOKEN") or "sk-dummy"
 
 MAX_STEPS = 100
 TASKS = ["easy", "medium", "hard"]
@@ -91,8 +91,10 @@ def get_llm_action(client, state, step_num):
         action = resp.choices[0].message.content.strip().lower()
         if action in ACTIONS:
             return action
-    except Exception:
-        pass
+        else:
+            print(f"[WARN] LLM returned invalid action: {action}", file=sys.stderr)
+    except Exception as e:
+        print(f"[ERROR] LLM API Call failed: {e}", file=sys.stderr)
     return None
 
 
@@ -189,12 +191,12 @@ def main():
     # ── Try LLM client ───────────────────────────────────────────────────────
     use_llm = False
     client = None
-    if API_BASE_URL and MODEL_NAME and HF_TOKEN and OpenAI is not None:
+    if API_BASE_URL and MODEL_NAME and API_KEY and OpenAI is not None:
         try:
-            client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+            client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
             use_llm = True
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[ERROR] OpenAI client initialization failed: {e}", file=sys.stderr)
 
     # ── Run all tasks — each in its own try/except ───────────────────────────
     results = {}

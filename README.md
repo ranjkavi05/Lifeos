@@ -74,7 +74,7 @@ docker run -p 7860:7860 lifeos
 # With LLM (set env vars first)
 export API_BASE_URL="https://..."
 export MODEL_NAME="meta-llama/..."
-export HF_TOKEN="hf_..."
+export API_KEY="sk-..."
 
 python inference.py
 
