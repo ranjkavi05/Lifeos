@@ -61,7 +61,7 @@ random.seed(42)
 # ─── Config ──────────────────────────────────────────────────────────────────
 API_BASE_URL = os.environ.get("API_BASE_URL", "")
 MODEL_NAME = os.environ.get("MODEL_NAME", "")
-API_KEY = os.environ.get("API_KEY", "")
+API_KEY = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", ""))
 
 MAX_STEPS = 100
 TASKS = ["easy", "medium", "hard"]
