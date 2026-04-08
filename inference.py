@@ -11,7 +11,7 @@ Steps:
   4. Grade final state
   5. Print [END] with score
 
-Uses OpenAI Client for LLM calls via API_BASE_URL, MODEL_NAME, HF_TOKEN.
+Uses OpenAI Client for LLM calls via API_BASE_URL, MODEL_NAME, API_KEY.
 """
 
 # ── Force unbuffered stdout BEFORE anything else ─────────────────────────────
@@ -43,7 +43,7 @@ except ImportError:
 try:
     from lifeos.env import LifeOSEnv
     from lifeos.utils import grade_agent
-except ImportError as e:
+except ImportError:
     print(f"[START] task=easy", flush=True)
     print(f"[STEP] step=1 reward=0.0", flush=True)
     print(f"[END] task=easy score=0.0 steps=1", flush=True)
@@ -61,7 +61,7 @@ random.seed(42)
 # ─── Config ──────────────────────────────────────────────────────────────────
 API_BASE_URL = os.environ.get("API_BASE_URL", "")
 MODEL_NAME = os.environ.get("MODEL_NAME", "")
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
+API_KEY = os.environ.get("API_KEY", "")
 
 MAX_STEPS = 100
 TASKS = ["easy", "medium", "hard"]
@@ -132,7 +132,7 @@ def run_task(task_name, use_llm=False, client=None):
     try:
         env = LifeOSEnv(personality="ambitious", task=task_name, seed=42)
         state = env.reset()
-    except Exception as e:
+    except Exception:
         # If env fails, print a minimal valid block
         print(f"[STEP] step=1 reward=0.0", flush=True)
         print(f"[END] task={task_name} score=0.0 steps=1", flush=True)
@@ -189,9 +189,9 @@ def main():
     # ── Try LLM client ───────────────────────────────────────────────────────
     use_llm = False
     client = None
-    if API_BASE_URL and MODEL_NAME and HF_TOKEN and OpenAI is not None:
+    if API_BASE_URL and MODEL_NAME and API_KEY and OpenAI is not None:
         try:
-            client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+            client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
             use_llm = True
         except Exception:
             pass
@@ -202,7 +202,7 @@ def main():
         try:
             r = run_task(task, use_llm=use_llm, client=client)
             results[task] = r
-        except Exception as e:
+        except Exception:
             # Last-resort: print minimal valid block
             print(f"[START] task={task}", flush=True)
             print(f"[STEP] step=1 reward=0.0", flush=True)
@@ -214,7 +214,7 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception as e:
+    except Exception:
         # Even on total crash, emit valid structured output
         for task in ["easy", "medium", "hard"]:
             print(f"[START] task={task}", flush=True)

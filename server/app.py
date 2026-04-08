@@ -3,7 +3,7 @@ LifeOS FastAPI Server — OpenEnv-compatible HTTP API.
 Moved to server/app.py for validation compliance.
 """
 import os
-from typing import Optional, Dict, Any
+from typing import Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,7 +12,7 @@ from pydantic import BaseModel
 try:
     from inference import heuristic_action
 except ImportError:
-    def heuristic_action(state): return "rest"
+    def heuristic_action(state: dict) -> str: return "rest"
 
 from lifeos.env import LifeOSEnv
 from lifeos.models import LifeState, StepResponse
@@ -64,7 +64,7 @@ async def reset(request: Optional[ResetRequest] = None):
 async def step(request: StepRequest):
     global env
     if request.task and request.task != env.task_name:
-        env = LifeOSEnv(personality=request.personality or env.personality, task=request.task)
+        env = LifeOSEnv(personality=request.personality or env.personality, task=request.task or "medium")
         env.reset()
     return env.step(request.action)
 
@@ -74,7 +74,7 @@ async def get_state():
 
 @app.post("/state_full")
 async def get_state_full():
-    return env._state
+    return env.state()
 
 @app.post("/auto_step")
 async def auto_step_ui(req: Request):
