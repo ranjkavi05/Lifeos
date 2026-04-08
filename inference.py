@@ -43,7 +43,7 @@ except ImportError:
 try:
     from lifeos.env import LifeOSEnv
     from lifeos.utils import grade_agent
-except ImportError as e:
+except ImportError:
     print(f"[START] task=easy", flush=True)
     print(f"[STEP] step=1 reward=0.0", flush=True)
     print(f"[END] task=easy score=0.0 steps=1", flush=True)
@@ -60,8 +60,13 @@ random.seed(42)
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 API_BASE_URL = os.environ.get("API_BASE_URL", "")
+<<<<<<< HEAD
 MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-3.5-turbo"
 API_KEY = os.environ.get("API_KEY") or os.environ.get("HF_TOKEN") or "sk-dummy"
+=======
+MODEL_NAME = os.environ.get("MODEL_NAME", "")
+API_KEY = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", ""))
+>>>>>>> b208de557c0ef4ccc0296e5544238f13d812ccea
 
 MAX_STEPS = 100
 TASKS = ["easy", "medium", "hard"]
@@ -134,7 +139,7 @@ def run_task(task_name, use_llm=False, client=None):
     try:
         env = LifeOSEnv(personality="ambitious", task=task_name, seed=42)
         state = env.reset()
-    except Exception as e:
+    except Exception:
         # If env fails, print a minimal valid block
         print(f"[STEP] step=1 reward=0.0", flush=True)
         print(f"[END] task={task_name} score=0.0 steps=1", flush=True)
@@ -204,7 +209,7 @@ def main():
         try:
             r = run_task(task, use_llm=use_llm, client=client)
             results[task] = r
-        except Exception as e:
+        except Exception:
             # Last-resort: print minimal valid block
             print(f"[START] task={task}", flush=True)
             print(f"[STEP] step=1 reward=0.0", flush=True)
@@ -216,7 +221,7 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception as e:
+    except Exception:
         # Even on total crash, emit valid structured output
         for task in ["easy", "medium", "hard"]:
             print(f"[START] task={task}", flush=True)
